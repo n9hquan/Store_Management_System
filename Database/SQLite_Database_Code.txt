@@ -1,0 +1,93 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\narum> cd "D:\Fulbright\Year 3\OOP\Project 1\Database"
+PS D:\Fulbright\Year 3\OOP\Project 1\Database> sqlite3 StoreData
+SQLite version 3.47.0 2024-10-21 16:30:22
+Enter ".help" for usage hints.
+sqlite> CREATE TABLE Supplier (
+(x1...>     SupplierID INTEGER PRIMARY KEY AUTOINCREMENT,
+(x1...>     SupplierName TEXT NOT NULL CHECK(length(SupplierName) BETWEEN 1 AND 50),
+(x1...>     PhoneContact TEXT CHECK(length(PhoneContact) BETWEEN 10 AND 15)
+(x1...> );
+sqlite> CREATE TABLE Product (
+(x1...>     ProductID INTEGER PRIMARY KEY AUTOINCREMENT,
+(x1...>     ProductName TEXT NOT NULL CHECK(length(ProductName) BETWEEN 1 AND 50),
+(x1...>     Category TEXT NOT NULL CHECK(Category IN ('Snack', 'Drink')),
+(x1...>     UnitPrice DECIMAL(10,2) NOT NULL CHECK(UnitPrice > 0),
+(x1...>     SupplierID INTEGER,
+(x1...>     FOREIGN KEY (SupplierID) REFERENCES Supplier(SupplierID)
+(x1...> );
+sqlite> CREATE TABLE Customer (
+(x1...>     CustomerID INTEGER PRIMARY KEY AUTOINCREMENT,
+(x1...>     CustomerName TEXT NOT NULL CHECK(length(CustomerName) BETWEEN 1 AND 50),
+(x1...>     PhoneNumber TEXT CHECK(PhoneNumber IS NULL OR length(PhoneNumber) BETWEEN 10 AND 15),
+(x1...>     Email TEXT
+(x1...> );
+sqlite> CREATE TABLE CustomerOrder (
+(x1...>     OrderID INTEGER PRIMARY KEY AUTOINCREMENT,
+(x1...>     CustomerID INTEGER,
+(x1...>     OrderDate DATE NOT NULL DEFAULT (date('now')),
+(x1...>     TotalOrderPrice DECIMAL(10,2) NOT NULL,
+(x1...>     FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID)
+(x1...> );
+sqlite> CREATE TABLE ItemOrder (
+(x1...>     ItemOrderID INTEGER PRIMARY KEY AUTOINCREMENT,
+(x1...>     OrderID INTEGER,
+(x1...>     ProductID INTEGER,
+(x1...>     Quantity INTEGER CHECK(Quantity BETWEEN 1 AND 999),
+(x1...>     UnitPrice DECIMAL(10,2) NOT NULL,
+(x1...>     TotalPrice DECIMAL(10,2) NOT NULL,
+(x1...>     FOREIGN KEY (OrderID) REFERENCES CustomerOrder(OrderID),
+(x1...>     FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+(x1...> );
+sqlite> .databases
+main: D:\Fulbright\Year 3\OOP\Project 1\Database\StoreData r/w
+sqlite> .tables
+Customer       CustomerOrder  ItemOrder      Product        Supplier
+sqlite> INSERT INTO Supplier (SupplierName, PhoneContact) VALUES
+   ...> ('Snack Master Inc.', '1234567890'),
+   ...> ('Beverage Bliss LLC', '9876543210'),
+   ...> ('Healthy Treats Co.', '5555555555');
+sqlite> INSERT INTO Product (ProductName, Category, UnitPrice, SupplierID) VALUES
+   ...> ('Chocolate Chip Cookie', 'Snack', 1.50, 1),
+   ...> ('Potato Chips', 'Snack', 2.00, 1),
+   ...> ('Pretzels', 'Snack', 1.75, 1),
+   ...> ('Cola', 'Drink', 2.50, 2),
+   ...> ('Bottled Water', 'Drink', 1.25, 2),
+   ...> ('Fruit Punch', 'Drink', 2.25, 2),
+   ...> ('Granola Bar', 'Snack', 1.25, 3),
+   ...> ('Energy Drink', 'Drink', 3.00, 2);
+sqlite> INSERT INTO Customer (CustomerName, PhoneNumber, Email) VALUES
+   ...> ('John Smith', '7778889999', 'john.smith@email.com'),
+   ...> ('Emily Johnson', '4445556666', 'emily.j@gmail.com'),
+   ...> ('Michael Brown', '1112223333', 'mbrown@yahoo.com'),
+   ...> ('Sarah Davis', '9990001111', 'sarah.davis@hotmail.com');
+sqlite> INSERT INTO CustomerOrder (CustomerID, OrderDate, TotalOrderPrice) VALUES
+   ...> (1, '2024-01-15', 6.75),
+   ...> (2, '2024-01-16', 4.25),
+   ...> (3, '2024-01-17', 9.50),
+   ...> (4, '2024-01-18', 5.00);
+sqlite> INSERT INTO ItemOrder (OrderID, ProductID, Quantity, UnitPrice, TotalPrice) VALUES
+   ...> (1, 1, 2, 1.50, 3.00),  -- 2 Chocolate Chip Cookies
+   ...> (1, 4, 1, 2.50, 2.50),  -- 1 Cola
+   ...> (1, 5, 1, 1.25, 1.25),  -- 1 Bottled Water
+   ...> (2, 2, 1, 2.00, 2.00),  -- 1 Potato Chips
+   ...> (2, 6, 1, 2.25, 2.25),  -- 1 Fruit Punch
+   ...> (3, 3, 2, 1.75, 3.50),  -- 2 Pretzels
+   ...> (3, 8, 2, 3.00, 6.00),  -- 2 Energy Drinks
+   ...> (4, 7, 3, 1.25, 3.75),  -- 3 Granola Bars
+   ...> (4, 5, 1, 1.25, 1.25);  -- 1 Bottled Water
+sqlite> SELECT * FROM Customer
+   ...> ;
+1|John Smith|7778889999|john.smith@email.com
+2|Emily Johnson|4445556666|emily.j@gmail.com
+3|Michael Brown|1112223333|mbrown@yahoo.com
+4|Sarah Davis|9990001111|sarah.davis@hotmail.com
+sqlite> SELECT * FROM Supplier;
+1|Snack Master Inc.|1234567890
+2|Beverage Bliss LLC|9876543210
+3|Healthy Treats Co.|5555555555
+sqlite>
